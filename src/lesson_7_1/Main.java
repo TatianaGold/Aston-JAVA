@@ -6,15 +6,17 @@ public class Main {
         Cat cat1 = new Cat("Мурзик");
         Cat cat2 = new Cat("Барсик");
 
-        System.out.println("Создано животных: " + Animal.getAnimalCount());
+        System.out.println("\nСоздано животных: " + Animal.getAnimalCount());
         System.out.println("Создано собак: " + Dog.getDogCount());
         System.out.println("Создано котов: " + Cat.getCatCount());
 
+        System.out.println("");
         dog1.run(150);
         dog1.swim(5);
         dog1.run(600);
         dog1.swim(15);
 
+        System.out.println("");
         cat1.run(150);
         cat1.swim(5);
         cat1.run(250);

@@ -14,16 +14,16 @@ public class Bowl {
         if (food <= amount) {
             food -= amount;
         } else {
-            System.out.println("Недостаточно еды в миске");
+            System.out.println("\nНедостаточно еды в миске");
         }
     }
 
     public void addFood(int amount) {
         if (amount > 0) {
             food += amount;
-            System.out.println("Добавлено " + amount + " единиц еды в миску");
+            System.out.println("\nДобавлено " + amount + " единиц еды в миску");
         } else {
-            System.out.println("Количество добавляемой еды должно быть положительным");
+            System.out.println("\nКоличество добавляемой еды должно быть положительным");
         }
     }
 }

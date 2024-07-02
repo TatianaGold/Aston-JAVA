@@ -14,7 +14,7 @@ public class Main {
         triangle.setFillColor("Желтый");
         triangle.setBorderColor("Фиолетовый");
 
-        System.out.println("Круг:");
+        System.out.println("\nКруг:");
         circle.printDetails();
 
         System.out.println("\nПрямоугольник:");
