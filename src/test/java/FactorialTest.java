@@ -1,10 +1,13 @@
 import org.example.Factorial;
-import org.testng.annotations.Test;
-import static org.testng.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FactorialTest {
+
     @Test
-    public void testFactorial() {
+    void testCalculateFactorial() {
         assertEquals(1, Factorial.calculateFactorial(0));
         assertEquals(1, Factorial.calculateFactorial(1));
         assertEquals(2, Factorial.calculateFactorial(2));
@@ -13,9 +16,12 @@ public class FactorialTest {
         assertEquals(120, Factorial.calculateFactorial(5));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void testNegativeNumber() {
-        Factorial.calculateFactorial(-1);
+    @Test
+    void testCalculateFactorialNegativeNumber() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            Factorial.calculateFactorial(-1);
+        });
     }
 }
+
 
