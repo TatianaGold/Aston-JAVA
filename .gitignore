@@ -5,3 +5,4 @@ output/
 release/
 debug/
 *.log
+Main.java
