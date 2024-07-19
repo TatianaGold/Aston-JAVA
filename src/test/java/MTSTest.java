@@ -3,7 +3,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -18,16 +17,14 @@ public class MTSTest {
     @BeforeClass
     void setup() {
         WebDriverManager.chromedriver().setup();
-        ChromeOptions options = new ChromeOptions();
-        driver = new ChromeDriver(options);
+        driver = new ChromeDriver();
         driver.get("https://www.mts.by/");
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        driver.manage().window().maximize();
+        wait = new WebDriverWait(driver, Duration.ofSeconds(30));
         WebElement click = driver.findElement(By.xpath("//*[@id=\"cookie-agree\"]"));
         click.click();
     }
 
-    @Test(description = "1. Проверка названия блока", priority = 1)
+    @Test(description = "1. Проверка названия блока")
     void titleTest() {
         WebElement title = driver.findElement(By.xpath("//h2[normalize-space(text())='Онлайн пополнение' and br/following-sibling::text()[normalize-space()='без комиссии']]"));
         Assert.assertNotNull(title, "Блок 'Онлайн пополнение без комиссии' не найден");
@@ -47,30 +44,34 @@ public class MTSTest {
         };
     }
 
-    @Test(dataProvider = "paymentLogos", description = "2. Проверка на наличие логотипов платежных систем", priority = 2)
+    @Test(dataProvider = "paymentLogos", description = "2. Проверка на наличие логотипов платежных систем")
     void paymentLogosTest(String altText) {
         WebElement logo = driver.findElement(By.xpath("//div[@class='pay__partners']//img[@alt='" + altText + "']"));
         Assert.assertTrue(logo.isDisplayed(), "Логотип платежной системы '" + altText + "' не найден");
     }
 
-    @Test(description = "3. Проверка работы ссылки 'Подробнее о сервисе'", priority = 3)
+    @Test(description = "3. Проверка работы ссылки 'Подробнее о сервисе'")
     void serviceLinkTest() {
-        WebElement serviceLink = driver.findElement(By.linkText("Подробнее о сервисе"));
-        Assert.assertTrue(serviceLink.isDisplayed());
+        WebElement serviceLink = driver.findElement(By.xpath("//a[@href='/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/']"));
+        Assert.assertTrue(serviceLink.isDisplayed(), "Ссылка 'Подробнее о сервисе' не найдена или не отображается");
         serviceLink.click();
-        String expected = "Порядок оплаты и безопасность интернет платежей";
-        String actual = driver.getTitle();
-        Assert.assertTrue(actual.contains(expected));
+        wait.until(ExpectedConditions.urlContains("/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/"));
+
+        String expectedUrlPath = "/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/";
+        Assert.assertTrue(driver.getCurrentUrl().contains(expectedUrlPath), "Переход по ссылке 'Подробнее о сервисе' не работает корректно");
+
+        driver.navigate().back();
     }
 
-    @Test(description = "4. Проверка заполненных полей и кнопки 'Продолжить'", priority = 4)
+    @Test(description = "4. Проверка заполненных полей и кнопки 'Продолжить'")
     void continueButtonTest() {
-        WebElement selectElement = driver.findElement(By.xpath("//*[@id=\"pay-section\"]"));
-        selectElement.click();
+//        WebElement selectElement = driver.findElement(By.id("pay"));
+//        selectElement.click();
 
         WebElement optionElement = driver.findElement(By.xpath("//option[@value='Услуги связи']"));
         optionElement.click();
 
+        // Заполнение полей
         WebElement phoneInput = driver.findElement(By.id("connection-phone"));
         phoneInput.clear();
 
@@ -79,10 +80,7 @@ public class MTSTest {
         sumInput.clear();
         sumInput.sendKeys("100");
 
-        WebElement emailInput = driver.findElement(By.id("connection-email"));
-        emailInput.clear();
-        emailInput.sendKeys("test@example.com");
-
+        // Нажатие кнопки "Продолжить"
         WebElement continueButton = driver.findElement(By.xpath("//form[@id='pay-connection']//button[@type='submit']"));
         continueButton.click();
 
@@ -90,12 +88,10 @@ public class MTSTest {
         Assert.assertTrue(continueButton.isEnabled(), "Кнопка 'Продолжить' не кликабельна.");
         continueButton.click();
 
-//        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.xpath("//iframe[@class=\"bepaid-iframe\"]")));
-//        WebElement modalWindow = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("app-wrapper__content")));
-//        WebElement modalWindow = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='app-wrapper__content']")));
-//        Assert.assertTrue(modalWindow.isDisplayed());
-
-        // Не получается проверить появляющееся окно :(
+        // Ожидание появления фрейма и переключение в него
+        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.xpath("//iframe[@class=\"bepaid-iframe\"]")));
+        WebElement modalWindow = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("app-wrapper__content")));
+        Assert.assertTrue(modalWindow.isDisplayed(), "Кнопка 'Продолжить' не работает корректно");
     }
 
     @AfterTest
