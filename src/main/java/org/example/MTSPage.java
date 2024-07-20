@@ -10,7 +10,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
-public class RechargePage {
+public class MTSPage {
     WebDriver driver;
     WebDriverWait wait;
 
@@ -95,7 +95,7 @@ public class RechargePage {
     @FindBy(xpath = "//input[@formcontrolname='holder']")
     public WebElement cardHolderInput;
 
-    public RechargePage(WebDriver driver) {
+    public MTSPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         PageFactory.initElements(driver, this);
