@@ -26,11 +26,6 @@
             <version>4.22.0</version>
         </dependency>
         <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>5.9.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.32</version>
@@ -40,6 +35,5 @@
             <artifactId>logback-classic</artifactId>
             <version>1.2.6</version>
         </dependency>
-
     </dependencies>
 </project>

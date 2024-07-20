@@ -1,116 +1,87 @@
-import io.github.bonigarcia.wdm.WebDriverManager;
+import org.example.RechargePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.*;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-
 
 public class MTSTest {
-    private WebDriver driver;
-    private WebDriverWait wait;
-    private Map<String, Map<String, String>> expectedPlaceholders;
+    WebDriver driver;
+    WebDriverWait wait;
+    RechargePage rechargePage;
 
     @BeforeClass
     void setup() {
-        WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
         driver.get("https://www.mts.by/");
-        wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        rechargePage = new RechargePage(driver);
         WebElement click = driver.findElement(By.xpath("//*[@id=\"cookie-agree\"]"));
         click.click();
+
     }
 
-
-    @Test(description = "1. Проверка placeholder'ов в незаполненных полях для всех вариантов оплаты услуг")
-    void placeholdersTest() {
-        Map<String, Map<String, String>> expectedPlaceholders = new HashMap<>();
-        // Настройка ожидаемых значений placeholder'ов для каждого варианта оплаты
-        expectedPlaceholders.put("Услуги связи", Map.of("connection-phone", "Номер телефона", "connection-sum", "Сумма", "connection-email", "E-mail для отправки чека"));
-
-        expectedPlaceholders.put("Домашний интернет", Map.of("internet-phone", "Номер абонента", "internet-sum", "Сумма", "internet-email", "E-mail для отправки чека"));
-
-        expectedPlaceholders.put("Рассрочка", Map.of("score-instalment", "Номер счета на 44", "instalment-sum", "Сумма", "instalment-email", "E-mail для отправки чека"));
-
-        expectedPlaceholders.put("Задолженность", Map.of("score-arrears", "Номер счета на 2073", "arrears-sum", "Сумма", "arrears-email", "E-mail для отправки чека"));
-
-        // Проверка placeholder'ов для каждого варианта оплаты
-        for (String option : expectedPlaceholders.keySet()) {
-            selectOption(option);
-            checkPlaceholders(expectedPlaceholders.get(option));
-        }
+    @Test(description = "1.1. Проверить placeholder надписи во всех полях 'Услуги связи'")
+    public void testServicePlaceholders() {
+        Assert.assertTrue(rechargePage.isPlaceholderDisplayed(rechargePage.servicePhoneInput, "Номер телефона"), "Placeholder для телефона 'Услуги связи' не отображается корректно");
+        Assert.assertTrue(rechargePage.isPlaceholderDisplayed(rechargePage.serviceSumInput, "Сумма"), "Placeholder для суммы 'Услуги связи' не отображается корректно");
+        Assert.assertTrue(rechargePage.isPlaceholderDisplayed(rechargePage.serviceEmailInput, "E-mail для отправки чека"), "Placeholder для email 'Услуги связи' не отображается корректно");
     }
 
-    private void selectOption(String option) {
-        WebElement optionElement = driver.findElement(By.xpath("//option[@value='" + option + "']"));
-        optionElement.click();
+    @Test(description = "1.2. Проверить placeholder надписи во всех полях 'Домашний интернет'")
+    public void testInternetPlaceholders() {
+        rechargePage.selectOption(rechargePage.internetOption);
+        Assert.assertTrue(rechargePage.isPlaceholderDisplayed(rechargePage.internetPhoneInput, "Номер абонента"), "Placeholder для телефона 'Домашний интернет' не отображается корректно");
+        Assert.assertTrue(rechargePage.isPlaceholderDisplayed(rechargePage.internetSumInput, "Сумма"), "Placeholder для суммы 'Домашний интернет' не отображается корректно");
+        Assert.assertTrue(rechargePage.isPlaceholderDisplayed(rechargePage.internetEmailInput, "E-mail для отправки чека"), "Placeholder для email 'Домашний интернет' не отображается корректно");
     }
 
-    private void checkPlaceholders(Map<String, String> placeholders) {
-        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-            WebElement input = driver.findElement(By.id(entry.getKey()));
-            String placeholder = input.getAttribute("placeholder");
-            Assert.assertEquals(placeholder, entry.getValue(), "Ошибка в placeholder для поля: " + entry.getKey());
-        }
+    @Test(description = "1.3. Проверить placeholder надписи во всех полях 'Рассрочка'")
+    public void testInstallmentPlaceholders() {
+        Assert.assertTrue(rechargePage.isPlaceholderDisplayed(rechargePage.installmentScoreInput, "Номер счета на 44"), "Placeholder для счета 'Рассрочка' не отображается корректно");
+        Assert.assertTrue(rechargePage.isPlaceholderDisplayed(rechargePage.installmentSumInput, "Сумма"), "Placeholder для суммы 'Рассрочка' не отображается корректно");
+        Assert.assertTrue(rechargePage.isPlaceholderDisplayed(rechargePage.installmentEmailInput, "E-mail для отправки чека"), "Placeholder для email 'Рассрочка' не отображается корректно");
     }
 
-    @Test(description = "2. Проверка полей 'Услуги связи' и отображение суммы")
-    void servicePaymentTest() {
-        WebElement optionElement = driver.findElement(By.xpath("//option[@value='Услуги связи']"));
-        optionElement.click();
+    @Test(description = "1.4 Проверить placeholder надписи во всех полях 'Задолженность'")
+    public void testDebtPlaceholders() {
+        rechargePage.selectOption(rechargePage.debtOption);
+        Assert.assertTrue(rechargePage.isPlaceholderDisplayed(rechargePage.debtScoreInput, "Номер счета на 2073"), "Placeholder для счета 'Задолженность' не отображается корректно");
+        Assert.assertTrue(rechargePage.isPlaceholderDisplayed(rechargePage.debtSumInput, "Сумма"), "Placeholder для суммы 'Задолженность' не отображается корректно");
+        Assert.assertTrue(rechargePage.isPlaceholderDisplayed(rechargePage.debtEmailInput, "E-mail для отправки чека"), "Placeholder для email 'Задолженность' не отображается корректно");
+    }
 
-        // Заполнение полей
-        WebElement phoneInput = driver.findElement(By.id("connection-phone"));
-        phoneInput.clear();
-        String phoneNumber = "375297777777";
-        phoneInput.sendKeys("297777777");
-
-        WebElement sumInput = driver.findElement(By.id("connection-sum"));
-        sumInput.clear();
+    @Test(description = "2. Проверка полей 'Услуги связи' и отображение данных в окне")
+    public void testServicePayment() {
+        String phoneNumber = "297777777";
         String amount = "100.00";
-        sumInput.sendKeys(amount);
 
-        // Нажатие кнопки "Продолжить"
-        WebElement continueButton = driver.findElement(By.xpath("//form[@id='pay-connection']//button[@type='submit']"));
-        continueButton.click();
+        rechargePage.selectServiceOption();
+        rechargePage.fillServiceForm(phoneNumber, amount);
+        rechargePage.submitServiceForm();
 
-        // Ожидание появления фрейма и переключение в него
-        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.xpath("//iframe[@class='bepaid-iframe']")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='app-wrapper__content']")));
+        rechargePage.switchToPaymentFrame();
 
-        // Проверка корректности отображения суммы
-        WebElement amountElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='pay-description__cost']/span")));
-        Assert.assertEquals(amountElement.getText(), amount + " BYN", "Сумма отображается некорректно");
-
-        // Проверка корректности отображения номера телефона
-        WebElement phoneElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='pay-description__text']/span")));
-        Assert.assertTrue(phoneElement.getText().contains("Номер:" + phoneNumber), "Номер телефона отображается некорректно");
-
-        // Проверка надписей в незаполненных полях для ввода реквизитов карты
-        WebElement cardNumberLabel = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label[contains(text(), 'Номер карты')]")));
-        WebElement expirationDateLabel = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label[contains(text(), 'Срок действия')]")));
-        WebElement cvcLabel = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label[contains(text(), 'CVC')]")));
-        WebElement cardHolderLabel = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//label[contains(text(), 'Имя держателя (как на карте)')]")));
-
-        Assert.assertTrue(cardNumberLabel.isDisplayed(), "Надпись 'Номер карты' не отображается");
-        Assert.assertTrue(expirationDateLabel.isDisplayed(), "Надпись 'Срок действия' не отображается");
-        Assert.assertTrue(cvcLabel.isDisplayed(), "Надпись 'CVC' не отображается");
-        Assert.assertTrue(cardHolderLabel.isDisplayed(), "Надпись 'Имя держателя (как на карте)' не отображается");
-
-        // Проверка корректности отображения суммы на кнопке "Оплатить"
-        WebElement payButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[contains(@class, 'colored') and contains(@class, 'disabled')]")));
-        String expectedAmountText = "Оплатить " + amount + " BYN";
-        Assert.assertTrue(payButton.getText().contains(expectedAmountText), "Сумма на кнопке некорректна");
+        Assert.assertTrue(rechargePage.isSummaryCostElementPresent(), "Элемент с суммой не найден");
+        Assert.assertEquals(rechargePage.getSummaryCost(), amount + " BYN", "Сумма отображается некорректно");
+        Assert.assertTrue(rechargePage.isSummaryPhoneElementPresent(), "Элемент с номером телефона не найден");
+        Assert.assertTrue(rechargePage.getSummaryPhone().contains("Номер:375" + phoneNumber), "Номер телефона отображается некорректно");
+        Assert.assertTrue(rechargePage.isPaymentIconsDisplayed(), "Иконки платёжных систем не отображаются");
+        Assert.assertTrue(rechargePage.isPayButtonElementPresent(), "Кнопка оплаты не найдена");
+        Assert.assertTrue(rechargePage.getPayButtonText().contains("Оплатить " + amount + " BYN"), "Сумма на кнопке некорректна");
+        Assert.assertTrue(rechargePage.areCardPlaceholdersDisplayed(), "Placeholder для полей реквизитов карты не отображаются");
     }
 
-    @AfterClass
+    @AfterMethod
+    void tearDown(){
+        driver.navigate().refresh();
+    }
+
+    @AfterTest
     void setDown() {
         driver.quit();
         driver = null;
