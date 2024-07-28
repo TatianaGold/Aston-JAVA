@@ -81,7 +81,6 @@ public class PostmanEchoPage {
                 .body("files", anEmptyMap())
                 .body("form", anEmptyMap());
 
-        // Additional checks for dynamic fields
         String requestStart = response.path("headers.x-request-start");
         String traceId = response.path("headers.x-amzn-trace-id");
 
@@ -100,7 +99,6 @@ public class PostmanEchoPage {
                 .body("files", anEmptyMap())
                 .body("data", equalTo(""));
 
-        // Additional checks for dynamic fields
         String requestStart = response.path("headers.x-request-start");
         String traceId = response.path("headers.x-amzn-trace-id");
 
