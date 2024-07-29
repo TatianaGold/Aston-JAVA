@@ -32,7 +32,7 @@ public class PostmanEchoPage {
 
     public Response postFormData(String foo1, String foo2) {
         return given()
-                .header("Content-Type", "application/x-www-form-urlencoded")
+                .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
                 .formParam("foo1", foo1)
                 .formParam("foo2", foo2)
                 .when()
